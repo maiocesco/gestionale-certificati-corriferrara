@@ -1,6 +1,6 @@
 # Gestionale Certificati Medici – A.S.D. Corriferrara
 
-Gestionale web per i certificati medici sportivi degli atleti dell'A.S.D. Corriferrara. La specifica completa è in [`docs/SPECIFICHE.md`](docs/SPECIFICHE.md), le convenzioni di sviluppo in [`CLAUDE.md`](CLAUDE.md).
+Gestionale web per i certificati medici sportivi degli atleti dell'A.S.D. Corriferrara. La specifica completa è in [`docs/SPECIFICHE.md`](docs/SPECIFICHE.md).
 
 Stack: Laravel 12, MySQL, Breeze (Blade) senza registrazione pubblica, Tailwind CSS, coda con driver `database` elaborata dallo scheduler (adatto a hosting condiviso senza worker permanente), test con Pest.
 
@@ -68,7 +68,3 @@ Non essendoci un worker della coda sempre attivo, sia la coda sia i comandi sche
 Lo scheduler si occupa di eseguire `queue:work --stop-when-empty` ogni minuto (vedi `routes/console.php`) e, dalla Fase 6 in poi, i comandi di promemoria e conservazione certificati.
 
 Checklist deliverability email (SPF/DKIM/DMARC) e istruzioni di deploy dettagliate verranno aggiunte in Fase 7.
-
-## Stato di avanzamento
-
-Vedi la sezione "Stato" in [`CLAUDE.md`](CLAUDE.md).
