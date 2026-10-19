@@ -21,6 +21,21 @@
         </div>
 
         <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Data di nascita') }}</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $user->birth_date?->format('d/m/Y') ?? '—' }}</dd>
+        </div>
+
+        <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Luogo di nascita') }}</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $user->birthCadastralCode?->displayName() ?? '—' }}</dd>
+        </div>
+
+        <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Codice fiscale') }}</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $user->fiscal_code ?? '—' }}</dd>
+        </div>
+
+        <div>
             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Ruolo') }}</dt>
             <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $user->role->label() }}</dd>
         </div>

@@ -29,7 +29,15 @@ Poi:
 php artisan migrate --seed
 ```
 
-Il seeder crea il primo amministratore (`maio.cesco@gmail.com`) con una password provvisoria generata casualmente e stampata a console (oppure letta da `ADMIN_PASSWORD` se impostata nell'ambiente): **annotala subito**, non viene mostrata di nuovo. Al primo accesso il sistema obbliga il cambio password.
+Il seeder popola anche la tabella dei codici catastali (comuni italiani e stati esteri, da `database/seeders/data/cadastral_codes.json`) e crea il primo amministratore (`maio.cesco@gmail.com`) con una password provvisoria generata casualmente e stampata a console (oppure letta da `ADMIN_PASSWORD` se impostata nell'ambiente): **annotala subito**, non viene mostrata di nuovo. Al primo accesso il sistema obbliga il cambio password.
+
+Data di nascita, luogo di nascita e codice fiscale del primo amministratore sono dati personali reali: non sono nel codice sorgente. Per popolarli imposta in `.env` (facoltativo, si possono anche completare dal pannello dopo il primo accesso):
+
+```
+ADMIN_BIRTH_DATE=gg-mm-aaaa
+ADMIN_BIRTH_PLACE_BELFIORE=...    # codice catastale (belfiore) del comune/stato di nascita
+ADMIN_FISCAL_CODE=...
+```
 
 ### Test
 
@@ -55,7 +63,9 @@ php artisan schedule:work     # scheduler (promemoria, elaborazione coda) in loc
 
 ## Dati catastali per la validazione del codice fiscale
 
-La Fase 2 richiede una tabella dei codici catastali (comuni italiani e stati esteri) per validare il codice fiscale degli atleti. Il file ufficiale verrà importato con un seeder dedicato quando disponibile.
+La tabella `cadastral_codes` (comuni italiani, incluso lo storico dei cambi nome, e stati esteri) è popolata da `CadastralCodeSeeder` a partire da `database/seeders/data/cadastral_codes.json`, il file ufficiale fornito dal cliente. Il seeder è idempotente: se la tabella è già popolata non la tocca, per non invalidare i riferimenti dagli utenti già creati.
+
+La validazione del codice fiscale (`FiscalCodeService`) verifica la coerenza con nome, cognome, data e luogo di nascita, incluso il carattere di controllo e i casi di omocodia. Il sesso non è un campo dell'anagrafica (non richiesto dalla specifica): viene dedotto provando entrambe le varianti del giorno di nascita codificate nel codice fiscale stesso.
 
 ## Deploy su hosting condiviso
 
