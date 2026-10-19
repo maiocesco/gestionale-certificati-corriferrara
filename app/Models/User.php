@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\MembershipEntity;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -31,6 +33,7 @@ class User extends Authenticatable
         'birth_date',
         'birth_cadastral_code_id',
         'fiscal_code',
+        'training_location_id',
     ];
 
     /**
@@ -65,6 +68,16 @@ class User extends Authenticatable
         return $this->belongsTo(CadastralCode::class, 'birth_cadastral_code_id');
     }
 
+    public function trainingLocation(): BelongsTo
+    {
+        return $this->belongsTo(TrainingLocation::class);
+    }
+
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(Membership::class);
+    }
+
     public function fullName(): string
     {
         return trim("{$this->first_name} {$this->last_name}");
@@ -78,5 +91,10 @@ class User extends Authenticatable
     public function isAthlete(): bool
     {
         return $this->role === UserRole::Athlete;
+    }
+
+    public function hasFidalMembership(): bool
+    {
+        return $this->memberships->contains(fn (Membership $membership) => $membership->entity === MembershipEntity::Fidal);
     }
 }

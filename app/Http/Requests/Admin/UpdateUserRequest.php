@@ -31,6 +31,7 @@ class UpdateUserRequest extends FormRequest
                 $this->fiscalCodeConsistencyRule(),
             ],
             'role' => ['required', Rule::enum(UserRole::class)],
+            'training_location_id' => ['nullable', 'exists:training_locations,id'],
         ];
     }
 

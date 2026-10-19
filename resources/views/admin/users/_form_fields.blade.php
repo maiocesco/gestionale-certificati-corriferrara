@@ -53,3 +53,17 @@
     </select>
     <x-input-error :messages="$errors->get('role')" class="mt-2" />
 </div>
+
+<div class="mt-4">
+    <x-input-label for="training_location_id" :value="__('Sede Runner\'s School')" />
+    <select id="training_location_id" name="training_location_id"
+            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">
+        <option value="">{{ __('Nessuna sede') }}</option>
+        @foreach ($trainingLocations as $location)
+            <option value="{{ $location->id }}" @selected(old('training_location_id', $editingUser?->training_location_id) == $location->id)>
+                {{ $location->displayName() }}
+            </option>
+        @endforeach
+    </select>
+    <x-input-error :messages="$errors->get('training_location_id')" class="mt-2" />
+</div>

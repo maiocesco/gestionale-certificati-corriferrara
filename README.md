@@ -67,6 +67,13 @@ La tabella `cadastral_codes` (comuni italiani, incluso lo storico dei cambi nome
 
 La validazione del codice fiscale (`FiscalCodeService`) verifica la coerenza con nome, cognome, data e luogo di nascita, incluso il carattere di controllo e i casi di omocodia. Il sesso non è un campo dell'anagrafica (non richiesto dalla specifica): viene dedotto provando entrambe le varianti del giorno di nascita codificate nel codice fiscale stesso.
 
+## Tesseramenti e sedi
+
+- **Tesseramenti**: un atleta può avere più tesseramenti (anche per la stessa disciplina con enti diversi, mai due identici); il tipo di società (Corriferrara, Corriferrara Bike, altra società) vincola le discipline ammesse; FIDAL è ammesso solo per l'atletica leggera ed è sempre agonistico (campo bloccato lato server, non solo nell'interfaccia). Le società esterne ("altra società") si scelgono o si creano al volo dalla stessa interfaccia.
+- **Nota**: la specifica vieta di aggiungere un tesseramento FIDAL senza un certificato agonistico valido per l'atletica leggera. Questo controllo richiede i certificati (Fase 4) e non è ancora implementato: verrà aggiunto insieme a `CertificateCoverageService`.
+- **Sedi Runner's School**: CRUD completo; l'eliminazione di una sede con atleti assegnati mostra una pagina di conferma con il conteggio e un link all'elenco filtrato per riassegnarli, invece di un semplice popup di conferma.
+- **Filtri atleti**: l'elenco admin è filtrabile (e i filtri sono combinabili) per società, ente di tesseramento, numero di tessera, disciplina e sede.
+
 ## Deploy su hosting condiviso
 
 Non essendoci un worker della coda sempre attivo, sia la coda sia i comandi schedulati (promemoria, controlli di conservazione) vengono elaborati dal cron tramite lo scheduler di Laravel. Configura sul cron del provider:

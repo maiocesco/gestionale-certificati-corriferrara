@@ -7,6 +7,19 @@
 
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @if (session('status'))
+                <div class="bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200 text-sm rounded-md p-4">
+                    @switch(session('status'))
+                        @case('membership-created') {{ __('Tesseramento aggiunto.') }} @break
+                        @case('membership-updated') {{ __('Tesseramento aggiornato.') }} @break
+                        @case('membership-deleted') {{ __('Tesseramento eliminato.') }} @break
+                        @case('password-reset') {{ __('Password reimpostata ed email inviata.') }} @break
+                        @case('user-activated') {{ __('Utente riattivato.') }} @break
+                        @case('user-deactivated') {{ __('Utente disattivato.') }} @break
+                    @endswitch
+                </div>
+            @endif
+
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <form method="POST" action="{{ route('admin.users.update', $user) }}">
                     @csrf
@@ -21,6 +34,10 @@
                         <x-primary-button>{{ __('Salva modifiche') }}</x-primary-button>
                     </div>
                 </form>
+            </div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                @include('admin.users._memberships', ['user' => $user])
             </div>
 
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg flex flex-wrap items-center justify-between gap-4">

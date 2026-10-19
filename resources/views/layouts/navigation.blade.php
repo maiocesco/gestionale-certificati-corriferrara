@@ -20,6 +20,9 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Amministrazione') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
+                            {{ __('Sedi') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -80,6 +83,9 @@
             @if (Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Amministrazione') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
+                    {{ __('Sedi') }}
                 </x-responsive-nav-link>
             @endif
         </div>
