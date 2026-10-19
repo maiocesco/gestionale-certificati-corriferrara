@@ -16,12 +16,19 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+                        {{ __('Certificati') }}
+                    </x-nav-link>
+
                     @if (Auth::user()->isAdmin())
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Amministrazione') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
                             {{ __('Sedi') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
+                            {{ __('Da approvare') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -80,12 +87,19 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
+            <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+                {{ __('Certificati') }}
+            </x-responsive-nav-link>
+
             @if (Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Amministrazione') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
                     {{ __('Sedi') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
+                    {{ __('Da approvare') }}
                 </x-responsive-nav-link>
             @endif
         </div>

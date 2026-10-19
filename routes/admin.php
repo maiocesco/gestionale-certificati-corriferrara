@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\CadastralCodeController;
+use App\Http\Controllers\Admin\CertificateController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExternalClubController;
 use App\Http\Controllers\Admin\MembershipController;
 use App\Http\Controllers\Admin\TrainingLocationController;
@@ -30,4 +32,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('training-locations/{training_location}', [TrainingLocationController::class, 'update'])->name('training-locations.update');
     Route::get('training-locations/{training_location}/delete', [TrainingLocationController::class, 'confirmDelete'])->name('training-locations.confirm-delete');
     Route::delete('training-locations/{training_location}', [TrainingLocationController::class, 'destroy'])->name('training-locations.destroy');
+
+    Route::get('certificates', [CertificateController::class, 'index'])->name('certificates.index');
+    Route::post('users/{user}/certificates', [CertificateController::class, 'store'])->name('users.certificates.store');
+    Route::put('certificates/{certificate}/approve', [CertificateController::class, 'approve'])->name('certificates.approve');
+    Route::put('certificates/{certificate}/reject', [CertificateController::class, 'reject'])->name('certificates.reject');
+
+    Route::get('dashboard/non-compliant', [DashboardController::class, 'nonCompliant'])->name('dashboard.non-compliant');
+    Route::get('dashboard/expiring', [DashboardController::class, 'expiring'])->name('dashboard.expiring');
 });

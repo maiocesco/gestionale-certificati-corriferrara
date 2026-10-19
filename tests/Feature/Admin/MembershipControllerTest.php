@@ -101,7 +101,19 @@ it('rifiuta FIDAL per una disciplina diversa dall\'atletica leggera', function (
     $response->assertSessionHasErrors('discipline');
 });
 
+it('impedisce di aggiungere un tesseramento FIDAL senza un certificato agonistico valido per l\'atletica leggera', function () {
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.users.memberships.store', $this->athlete),
+        validMembershipPayload(['entity' => MembershipEntity::Fidal->value, 'discipline' => Discipline::AtleticaLeggera->value])
+    );
+
+    $response->assertSessionHasErrors('discipline');
+    expect($this->athlete->memberships()->count())->toBe(0);
+});
+
 it('forza sempre agonistico per un tesseramento FIDAL, anche se non richiesto', function () {
+    \App\Models\Certificate::factory()->for($this->athlete)->competitive(Discipline::AtleticaLeggera)->approved()->create();
+
     $this->actingAs($this->admin)->post(
         route('admin.users.memberships.store', $this->athlete),
         validMembershipPayload([

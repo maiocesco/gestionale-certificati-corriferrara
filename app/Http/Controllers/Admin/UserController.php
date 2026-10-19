@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\ClubType;
-use App\Enums\Discipline;
-use App\Enums\MembershipEntity;
 use App\Enums\UserRole;
+use App\Http\Controllers\Admin\Concerns\FiltersAthletes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
-use App\Models\ExternalClub;
 use App\Models\TrainingLocation;
 use App\Models\User;
 use App\Services\UserAccountService;
@@ -19,6 +16,8 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    use FiltersAthletes;
+
     public function index(Request $request): View
     {
         $this->authorize('viewAny', User::class);
@@ -26,34 +25,17 @@ class UserController extends Controller
         $search = $request->string('q')->trim()->toString();
         $filters = $request->only(['club_type', 'external_club_id', 'entity', 'discipline', 'card_number', 'training_location_id']);
 
-        $hasMembershipFilters = collect($filters)
-            ->except('training_location_id')
-            ->filter(fn ($value) => $value !== null && $value !== '')
-            ->isNotEmpty();
-
-        $users = User::query()
-            ->with('trainingLocation')
-            ->when($search !== '', function ($query) use ($search) {
+        $users = $this->applyAthleteFilters(
+            User::query()->with('trainingLocation')->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('first_name', 'like', "%{$search}%")
                         ->orWhere('last_name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('fiscal_code', 'like', "%{$search}%");
                 });
-            })
-            ->when($request->filled('training_location_id'), function ($query) use ($request) {
-                $query->where('training_location_id', $request->input('training_location_id'));
-            })
-            ->when($hasMembershipFilters, function ($query) use ($request) {
-                $query->whereHas('memberships', function ($query) use ($request) {
-                    $query
-                        ->when($request->filled('entity'), fn ($q) => $q->where('entity', $request->input('entity')))
-                        ->when($request->filled('discipline'), fn ($q) => $q->where('discipline', $request->input('discipline')))
-                        ->when($request->filled('club_type'), fn ($q) => $q->where('club_type', $request->input('club_type')))
-                        ->when($request->filled('external_club_id'), fn ($q) => $q->where('external_club_id', $request->input('external_club_id')))
-                        ->when($request->filled('card_number'), fn ($q) => $q->where('card_number', 'like', '%'.$request->input('card_number').'%'));
-                });
-            })
+            }),
+            $request,
+        )
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->paginate(20)
@@ -63,11 +45,7 @@ class UserController extends Controller
             'users' => $users,
             'search' => $search,
             'filters' => $filters,
-            'entities' => MembershipEntity::cases(),
-            'disciplines' => Discipline::cases(),
-            'clubTypes' => ClubType::cases(),
-            'externalClubs' => ExternalClub::orderBy('name')->get(),
-            'trainingLocations' => TrainingLocation::orderBy('name')->get(),
+            ...$this->athleteFilterOptions(),
         ]);
     }
 
@@ -92,7 +70,7 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        $user->load('memberships.externalClub');
+        $user->load('memberships.externalClub', 'certificates');
 
         return view('admin.users.edit', [
             'user' => $user,

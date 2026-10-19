@@ -70,9 +70,18 @@ La validazione del codice fiscale (`FiscalCodeService`) verifica la coerenza con
 ## Tesseramenti e sedi
 
 - **Tesseramenti**: un atleta può avere più tesseramenti (anche per la stessa disciplina con enti diversi, mai due identici); il tipo di società (Corriferrara, Corriferrara Bike, altra società) vincola le discipline ammesse; FIDAL è ammesso solo per l'atletica leggera ed è sempre agonistico (campo bloccato lato server, non solo nell'interfaccia). Le società esterne ("altra società") si scelgono o si creano al volo dalla stessa interfaccia.
-- **Nota**: la specifica vieta di aggiungere un tesseramento FIDAL senza un certificato agonistico valido per l'atletica leggera. Questo controllo richiede i certificati (Fase 4) e non è ancora implementato: verrà aggiunto insieme a `CertificateCoverageService`.
 - **Sedi Runner's School**: CRUD completo; l'eliminazione di una sede con atleti assegnati mostra una pagina di conferma con il conteggio e un link all'elenco filtrato per riassegnarli, invece di un semplice popup di conferma.
 - **Filtri atleti**: l'elenco admin è filtrabile (e i filtri sono combinabili) per società, ente di tesseramento, numero di tessera, disciplina e sede.
+
+## Certificati e copertura
+
+`CertificateCoverageService` è l'unica fonte di verità per le regole di copertura (requisiti per disciplina agonistica, requisito generico per l'attività non agonistica, nozione di certificato "superato"). È usato da profilo atleta, dashboard amministratore e, dalla Fase 6, dai promemoria.
+
+- **Upload**: l'atleta carica i propri certificati (scadenza futura, tipo, disciplina se agonistico, file immagine/PDF, dimensione max configurabile con `CERTIFICATE_MAX_SIZE_MB`, 10 MB di default); l'amministratore può caricare per conto di un atleta dalla sua scheda.
+- **FIDAL**: un atleta con tesseramento FIDAL non può caricare (né un amministratore approvare) un certificato non agonistico; viceversa non si può aggiungere un tesseramento FIDAL senza un certificato agonistico già valido per l'atletica leggera — chiude il punto lasciato in sospeso in Fase 3.
+- **Approvazione/rifiuto**: l'amministratore può correggere scadenza/tipo/disciplina in approvazione; il rifiuto richiede una motivazione obbligatoria. Entrambi inviano un'email (mailer di default, in attesa del sistema PEC/classico di Fase 5).
+- **File**: solo su disco privato (`storage/app/private`), nomi non prevedibili, accesso tramite rotta protetta da Policy; ogni visualizzazione è registrata nella tabella `audit_logs`.
+- **Dashboard amministratore**: certificati da approvare, atleti non in regola (con il motivo), certificati in scadenza nei prossimi 30 giorni — ogni elenco filtrabile ed esportabile in CSV.
 
 ## Deploy su hosting condiviso
 

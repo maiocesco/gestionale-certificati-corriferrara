@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Admin\Concerns;
 
+use App\Enums\CertificateType;
 use App\Enums\ClubType;
 use App\Enums\Discipline;
 use App\Enums\MembershipEntity;
+use App\Models\Certificate;
 use App\Models\User;
 use Closure;
 use Illuminate\Validation\Rule;
@@ -20,6 +22,7 @@ trait ValidatesMembershipRules
                 Rule::enum(Discipline::class),
                 $this->clubDisciplineRule(),
                 $this->fidalDisciplineRule(),
+                $this->fidalRequiresCertificateRule($user),
                 $this->uniqueEntityDisciplineRule($user, $ignoreMembershipId),
             ],
             'club_type' => ['required', Rule::enum(ClubType::class)],
@@ -65,6 +68,31 @@ trait ValidatesMembershipRules
 
             if ($entity === MembershipEntity::Fidal && $discipline !== Discipline::AtleticaLeggera) {
                 $fail(__('Il tesseramento FIDAL è ammesso solo per l\'atletica leggera.'));
+            }
+        };
+    }
+
+    /**
+     * Non si può aggiungere un tesseramento FIDAL senza un certificato
+     * agonistico già valido per l'atletica leggera.
+     */
+    protected function fidalRequiresCertificateRule(User $user): Closure
+    {
+        return function (string $attribute, mixed $value, Closure $fail) use ($user): void {
+            $entity = $this->input('entity') ? MembershipEntity::tryFrom($this->input('entity')) : null;
+
+            if ($entity !== MembershipEntity::Fidal) {
+                return;
+            }
+
+            $hasValidAthleticsCertificate = Certificate::where('user_id', $user->id)
+                ->valid()
+                ->where('type', CertificateType::Competitive->value)
+                ->where('discipline', Discipline::AtleticaLeggera->value)
+                ->exists();
+
+            if (! $hasValidAthleticsCertificate) {
+                $fail(__('Per aggiungere un tesseramento FIDAL l\'atleta deve avere già un certificato agonistico valido per l\'atletica leggera.'));
             }
         };
     }

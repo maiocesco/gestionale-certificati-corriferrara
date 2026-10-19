@@ -35,4 +35,9 @@ class UserPolicy
     {
         return $user->isAdmin() && ! $user->is($model);
     }
+
+    public function uploadCertificateFor(User $user, User $model): bool
+    {
+        return $user->isAdmin() || $user->is($model);
+    }
 }

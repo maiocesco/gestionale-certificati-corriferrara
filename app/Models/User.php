@@ -78,6 +78,11 @@ class User extends Authenticatable
         return $this->hasMany(Membership::class);
     }
 
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
     public function fullName(): string
     {
         return trim("{$this->first_name} {$this->last_name}");

@@ -13,6 +13,7 @@
                         @case('membership-created') {{ __('Tesseramento aggiunto.') }} @break
                         @case('membership-updated') {{ __('Tesseramento aggiornato.') }} @break
                         @case('membership-deleted') {{ __('Tesseramento eliminato.') }} @break
+                        @case('certificate-uploaded') {{ __('Certificato caricato. In attesa di verifica.') }} @break
                         @case('password-reset') {{ __('Password reimpostata ed email inviata.') }} @break
                         @case('user-activated') {{ __('Utente riattivato.') }} @break
                         @case('user-deactivated') {{ __('Utente disattivato.') }} @break
@@ -38,6 +39,10 @@
 
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 @include('admin.users._memberships', ['user' => $user])
+            </div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                @include('admin.users._certificate_upload', ['user' => $user])
             </div>
 
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg flex flex-wrap items-center justify-between gap-4">
