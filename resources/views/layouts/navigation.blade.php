@@ -16,19 +16,37 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
-                        {{ __('Certificati') }}
-                    </x-nav-link>
-
                     @if (Auth::user()->isAdmin())
+                        @php
+                            $certificatiActive = request()->routeIs('certificates.*')
+                                || request()->routeIs('admin.certificates.*')
+                                || request()->routeIs('admin.certificate-deletion.*')
+                                || request()->routeIs('admin.retention-settings.*');
+                        @endphp
+                        <div class="relative h-full flex items-center" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                            <x-nav-link :href="route('certificates.index')" :active="$certificatiActive">
+                                {{ __('Certificati') }}
+                            </x-nav-link>
+
+                            <div x-show="open" x-transition style="display: none;"
+                                 class="absolute left-0 top-full z-50 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 py-1">
+                                <a href="{{ route('admin.certificates.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    {{ __('Da approvare') }}
+                                </a>
+                                <a href="{{ route('admin.certificate-deletion.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    {{ __('Da eliminare') }}
+                                </a>
+                                <a href="{{ route('admin.retention-settings.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    {{ __('Conservazione') }}
+                                </a>
+                            </div>
+                        </div>
+
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Amministrazione') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
                             {{ __('Sedi') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
-                            {{ __('Da approvare') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.email-accounts.index')" :active="request()->routeIs('admin.email-accounts.*')">
                             {{ __('Account email') }}
@@ -39,11 +57,9 @@
                         <x-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
                             {{ __('Log invii') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.certificate-deletion.index')" :active="request()->routeIs('admin.certificate-deletion.*')">
-                            {{ __('Da eliminare') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.retention-settings.index')" :active="request()->routeIs('admin.retention-settings.*')">
-                            {{ __('Conservazione') }}
+                    @else
+                        <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+                            {{ __('Certificati') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -102,19 +118,34 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+            @php
+                $certificatiActive = request()->routeIs('certificates.*')
+                    || request()->routeIs('admin.certificates.*')
+                    || request()->routeIs('admin.certificate-deletion.*')
+                    || request()->routeIs('admin.retention-settings.*');
+            @endphp
+            <x-responsive-nav-link :href="route('certificates.index')" :active="$certificatiActive">
                 {{ __('Certificati') }}
             </x-responsive-nav-link>
 
             @if (Auth::user()->isAdmin())
+                <div class="ps-4">
+                    <x-responsive-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
+                        {{ __('Da approvare') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.certificate-deletion.index')" :active="request()->routeIs('admin.certificate-deletion.*')">
+                        {{ __('Da eliminare') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.retention-settings.index')" :active="request()->routeIs('admin.retention-settings.*')">
+                        {{ __('Conservazione') }}
+                    </x-responsive-nav-link>
+                </div>
+
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Amministrazione') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
                     {{ __('Sedi') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
-                    {{ __('Da approvare') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.email-accounts.index')" :active="request()->routeIs('admin.email-accounts.*')">
                     {{ __('Account email') }}
@@ -124,12 +155,6 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
                     {{ __('Log invii') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.certificate-deletion.index')" :active="request()->routeIs('admin.certificate-deletion.*')">
-                    {{ __('Da eliminare') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.retention-settings.index')" :active="request()->routeIs('admin.retention-settings.*')">
-                    {{ __('Conservazione') }}
                 </x-responsive-nav-link>
             @endif
         </div>
