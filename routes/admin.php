@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Admin\CadastralCodeController;
 use App\Http\Controllers\Admin\CertificateController;
+use App\Http\Controllers\Admin\CertificateDeletionController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmailAccountController;
 use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\ExternalClubController;
 use App\Http\Controllers\Admin\MembershipController;
 use App\Http\Controllers\Admin\NotificationLogController;
+use App\Http\Controllers\Admin\RetentionSettingController;
 use App\Http\Controllers\Admin\TrainingLocationController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -59,4 +61,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('email-templates/{emailTemplate}/reset', [EmailTemplateController::class, 'reset'])->name('email-templates.reset');
 
     Route::get('notification-log', [NotificationLogController::class, 'index'])->name('notification-log.index');
+
+    Route::get('retention-settings', [RetentionSettingController::class, 'index'])->name('retention-settings.index');
+    Route::put('retention-settings/{category}', [RetentionSettingController::class, 'update'])->name('retention-settings.update');
+
+    Route::get('certificate-deletion', [CertificateDeletionController::class, 'index'])->name('certificate-deletion.index');
+    Route::get('certificate-deletion/{certificate}', [CertificateDeletionController::class, 'confirmDelete'])->name('certificate-deletion.confirm-delete');
+    Route::delete('certificate-deletion/{certificate}', [CertificateDeletionController::class, 'destroy'])->name('certificate-deletion.destroy');
 });

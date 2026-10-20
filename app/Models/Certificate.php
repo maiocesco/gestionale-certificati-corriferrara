@@ -31,6 +31,9 @@ class Certificate extends Model
         'rejection_reason',
         'reviewed_by',
         'reviewed_at',
+        'retention_notified_at',
+        'deleted_at',
+        'deleted_by',
     ];
 
     protected function casts(): array
@@ -41,6 +44,8 @@ class Certificate extends Model
             'status' => CertificateStatus::class,
             'expires_at' => 'date',
             'reviewed_at' => 'datetime',
+            'retention_notified_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 
@@ -62,6 +67,21 @@ class Certificate extends Model
     public function notifications(): HasMany
     {
         return $this->hasMany(CertificateNotification::class);
+    }
+
+    public function deletedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    /**
+     * Vero per un certificato eliminato per conservazione: il file e i
+     * metadati non essenziali sono stati rimossi, resta solo il record
+     * minimo (atleta, tipo, scadenza, data ed esecutore dell'eliminazione).
+     */
+    public function isRetentionDeleted(): bool
+    {
+        return $this->deleted_at !== null;
     }
 
     /**

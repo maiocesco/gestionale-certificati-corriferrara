@@ -18,6 +18,8 @@ class CertificateFileController extends Controller
     {
         $this->authorize('viewFile', $certificate);
 
+        abort_if($certificate->file_path === null, 404);
+
         AuditLog::record(auth()->user(), 'certificate.file.viewed', $certificate, [
             'owner_id' => $certificate->user_id,
         ]);

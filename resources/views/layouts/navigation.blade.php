@@ -39,6 +39,12 @@
                         <x-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
                             {{ __('Log invii') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.certificate-deletion.index')" :active="request()->routeIs('admin.certificate-deletion.*')">
+                            {{ __('Da eliminare') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.retention-settings.index')" :active="request()->routeIs('admin.retention-settings.*')">
+                            {{ __('Conservazione') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -118,6 +124,12 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
                     {{ __('Log invii') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.certificate-deletion.index')" :active="request()->routeIs('admin.certificate-deletion.*')">
+                    {{ __('Da eliminare') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.retention-settings.index')" :active="request()->routeIs('admin.retention-settings.*')">
+                    {{ __('Conservazione') }}
                 </x-responsive-nav-link>
             @endif
         </div>

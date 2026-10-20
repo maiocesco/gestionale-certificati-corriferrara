@@ -18,14 +18,50 @@
             @endif
 
             <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-4 sm:p-6">
-                <form method="GET" class="mb-4">
-                    <select name="status" onchange="this.form.submit()"
-                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm">
-                        <option value="" @selected($status === '')>{{ __('Da approvare') }}</option>
-                        @foreach ($statuses as $s)
-                            <option value="{{ $s->value }}" @selected($status === $s->value)>{{ $s->label() }}</option>
-                        @endforeach
-                    </select>
+                <form method="GET" class="mb-4 space-y-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                        <select name="status" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm">
+                            <option value="" @selected($status === '')>{{ __('Da approvare') }}</option>
+                            @foreach ($statuses as $s)
+                                <option value="{{ $s->value }}" @selected($status === $s->value)>{{ $s->label() }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="club_type" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm">
+                            <option value="">{{ __('Società (tutte)') }}</option>
+                            @foreach ($clubTypes as $clubType)
+                                <option value="{{ $clubType->value }}" @selected(request('club_type') === $clubType->value)>{{ $clubType->label() }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="entity" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm">
+                            <option value="">{{ __('Ente (tutti)') }}</option>
+                            @foreach ($entities as $entity)
+                                <option value="{{ $entity->value }}" @selected(request('entity') === $entity->value)>{{ $entity->label() }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="discipline" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm">
+                            <option value="">{{ __('Disciplina (tutte)') }}</option>
+                            @foreach ($disciplines as $discipline)
+                                <option value="{{ $discipline->value }}" @selected(request('discipline') === $discipline->value)>{{ $discipline->label() }}</option>
+                            @endforeach
+                        </select>
+
+                        <select name="training_location_id" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm text-sm">
+                            <option value="">{{ __('Sede (tutte)') }}</option>
+                            @foreach ($trainingLocations as $location)
+                                <option value="{{ $location->id }}" @selected((string) request('training_location_id') === (string) $location->id)>{{ $location->displayName() }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <x-secondary-button type="submit">{{ __('Filtra') }}</x-secondary-button>
+                        <a href="{{ route('admin.certificates.index', array_merge(request()->query(), ['export' => 'csv'])) }}" class="text-sm text-indigo-600 dark:text-indigo-400 underline">
+                            {{ __('Esporta CSV') }}
+                        </a>
+                    </div>
                 </form>
 
                 @forelse ($certificates as $certificate)

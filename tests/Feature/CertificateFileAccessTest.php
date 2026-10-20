@@ -38,6 +38,12 @@ it('impedisce a un altro atleta di visualizzare il file', function () {
     $this->actingAs($other)->get(route('certificates.file', $this->certificate))->assertForbidden();
 });
 
+it('restituisce 404 per un certificato eliminato per conservazione (file non più presente)', function () {
+    $this->certificate->update(['file_path' => null]);
+
+    $this->actingAs($this->admin)->get(route('certificates.file', $this->certificate))->assertNotFound();
+});
+
 it('registra ogni accesso al file nell\'audit log', function () {
     expect(AuditLog::count())->toBe(0);
 

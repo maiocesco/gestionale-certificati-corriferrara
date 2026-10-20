@@ -85,3 +85,17 @@ it('esporta in csv l\'elenco dei certificati in scadenza', function () {
     $response->assertOk();
     $response->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
 });
+
+it('filtra i certificati in scadenza per ente di tesseramento', function () {
+    $fidalAthlete = User::factory()->create(['first_name' => 'Fidal', 'last_name' => 'Atleta']);
+    Membership::factory()->for($fidalAthlete)->create(['entity' => MembershipEntity::Fidal]);
+    Certificate::factory()->for($fidalAthlete)->approved()->expiringInDays(10)->create();
+
+    $uispAthlete = User::factory()->create(['first_name' => 'Uisp', 'last_name' => 'Atleta']);
+    Membership::factory()->for($uispAthlete)->create(['entity' => MembershipEntity::Uisp]);
+    Certificate::factory()->for($uispAthlete)->approved()->expiringInDays(10)->create();
+
+    $response = $this->actingAs($this->admin)->get(route('admin.dashboard.expiring', ['entity' => MembershipEntity::Fidal->value]));
+
+    $response->assertOk()->assertSee('Fidal Atleta')->assertDontSee('Uisp Atleta');
+});

@@ -26,4 +26,9 @@ class CertificatePolicy
     {
         return $user->isAdmin();
     }
+
+    public function delete(User $user, Certificate $certificate): bool
+    {
+        return $user->isAdmin();
+    }
 }

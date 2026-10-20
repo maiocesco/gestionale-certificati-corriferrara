@@ -14,9 +14,37 @@ trait FiltersAthletes
      */
     protected function applyAthleteFilters(Builder $query, Request $request): Builder
     {
-        $filters = $request->only(['club_type', 'external_club_id', 'entity', 'discipline', 'card_number']);
+        return $this->constrainToAthleteFilters($query, $request);
+    }
 
-        $hasMembershipFilters = collect($filters)
+    /**
+     * Stessi filtri di applyAthleteFilters(), per una query il cui modello
+     * radice non è User ma ha una relazione belongsTo "user" (es. una
+     * query su Certificate per l'elenco "da approvare"/"in scadenza").
+     */
+    protected function applyAthleteFiltersViaUser(Builder $query, Request $request): Builder
+    {
+        if (! $this->hasAnyAthleteFilter($request)) {
+            return $query;
+        }
+
+        return $query->whereHas('user', fn ($query) => $this->constrainToAthleteFilters($query, $request));
+    }
+
+    private function hasAnyAthleteFilter(Request $request): bool
+    {
+        if ($request->filled('training_location_id')) {
+            return true;
+        }
+
+        return collect($request->only(['club_type', 'external_club_id', 'entity', 'discipline', 'card_number']))
+            ->filter(fn ($value) => $value !== null && $value !== '')
+            ->isNotEmpty();
+    }
+
+    private function constrainToAthleteFilters(Builder $query, Request $request): Builder
+    {
+        $hasMembershipFilters = collect($request->only(['club_type', 'external_club_id', 'entity', 'discipline', 'card_number']))
             ->filter(fn ($value) => $value !== null && $value !== '')
             ->isNotEmpty();
 

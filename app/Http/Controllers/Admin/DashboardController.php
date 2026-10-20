@@ -55,15 +55,13 @@ class DashboardController extends Controller
     {
         $this->authorize('viewAny', Certificate::class);
 
-        $certificates = Certificate::query()
-            ->valid()
-            ->whereDate('expires_at', '<=', now()->addDays(30)->toDateString())
-            ->with('user')
-            ->orderBy('expires_at')
-            ->get();
+        $query = $this->applyAthleteFiltersViaUser(
+            Certificate::query()->valid()->whereDate('expires_at', '<=', now()->addDays(30)->toDateString())->with('user'),
+            $request,
+        )->orderBy('expires_at');
 
         if ($request->string('export')->toString() === 'csv') {
-            return CsvExport::stream('certificati-in-scadenza.csv', ['Atleta', 'Email', 'Tipo', 'Scadenza'], $certificates->map(fn (Certificate $c) => [
+            return CsvExport::stream('certificati-in-scadenza.csv', ['Atleta', 'Email', 'Tipo', 'Scadenza'], $query->get()->map(fn (Certificate $c) => [
                 $c->user->fullName(),
                 $c->user->email,
                 $c->typeDescription(),
@@ -71,6 +69,9 @@ class DashboardController extends Controller
             ]));
         }
 
-        return view('admin.dashboard-expiring', ['certificates' => $certificates]);
+        return view('admin.dashboard-expiring', [
+            'certificates' => $query->get(),
+            ...$this->athleteFilterOptions(),
+        ]);
     }
 }

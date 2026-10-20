@@ -102,14 +102,39 @@ Ogni invio passa dalla coda (`App\Jobs\SendCertificateNotification`, fino a 3 te
 
 Ogni amministratore può attivare dal proprio profilo un **riepilogo giornaliero** via email (preferenza personale, disattivata di default): conteggio dei certificati da approvare e di quelli in scadenza nei prossimi 30 giorni, inviato dal comando schedulato `admins:send-daily-digest` (08:05) solo se quel giorno c'è davvero qualcosa da segnalare.
 
+## Conservazione dei certificati
+
+`RetentionService` è l'unica fonte di verità per la politica di conservazione. Il periodo (in anni, dalla **data di scadenza** del certificato) dipende dall'ente di tesseramento dell'atleta — se ne ha più di uno vale il più lungo tra quelli applicabili, senza tesseramenti si applica "Nessun tesseramento" — ed è configurabile dal pannello (**Conservazione**, default FIDAL 3 anni / CSI 5 / UISP 10 / nessun tesseramento 10, come da specifica). I certificati validi o in attesa di verifica non sono mai eliminabili, qualunque sia la loro età.
+
+- Il comando mensile `certificates:retention-notify` (il giorno 1 di ogni mese) individua i certificati appena entrati nel periodo oltre la conservazione e avvisa via email tutti gli amministratori attivi — una volta sola per certificato, anche se restano nell'elenco finché non vengono eliminati.
+- La pagina **Da eliminare** mostra sempre l'elenco aggiornato (interrogato dal vivo, non da uno stato salvato) con un link di conferma per ciascun certificato.
+- L'eliminazione, dopo conferma, cancella il file dal disco e riduce il certificato al record minimo richiesto dalla specifica (atleta, tipo, scadenza, data ed esecutore dell'eliminazione): oggetto, nome file originale, MIME, dimensione e motivazione di un eventuale rifiuto vengono rimossi. L'azione è registrata nell'audit log.
+
 ## Deploy su hosting condiviso
 
-Non essendoci un worker della coda sempre attivo, sia la coda sia i comandi schedulati (promemoria, controlli di conservazione) vengono elaborati dal cron tramite lo scheduler di Laravel. Configura sul cron del provider:
+Non essendoci un worker della coda sempre attivo, sia la coda sia i comandi schedulati vengono elaborati dal cron tramite lo scheduler di Laravel. Configura sul cron del provider un'unica riga:
 
 ```cron
 * * * * * cd /percorso/del/progetto && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-Lo scheduler si occupa di eseguire `queue:work --stop-when-empty` ogni minuto, `certificates:send-reminders` e `admins:send-daily-digest` ogni mattina (vedi `routes/console.php`) e, dalla Fase 7, i comandi di conservazione certificati.
+Lo scheduler (vedi `routes/console.php`) si occupa di tutto il resto: `queue:work --stop-when-empty` ogni minuto, `certificates:send-reminders` e `admins:send-daily-digest` ogni mattina, `certificates:retention-notify` il primo di ogni mese.
 
-Checklist deliverability email (SPF/DKIM/DMARC) e istruzioni di deploy dettagliate verranno aggiunte in Fase 7.
+### Passi di deploy
+
+1. `composer install --no-dev --optimize-autoloader` e `npm install && npm run build`.
+2. Copia `.env.example` in `.env`, imposta `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL`, le credenziali del database e (facoltativo) `ADMIN_PASSWORD`/i dati anagrafici dell'admin — vedi sopra.
+3. `php artisan key:generate --force`, poi `php artisan migrate --seed --force`.
+4. Configura la riga di cron sopra.
+5. Accedi come primo amministratore (password stampata a console dal seeder) e, dal pannello, imposta gli **account email** (PEC e classica) — fino a quel momento gli invii usano il mailer di fallback di `.env`.
+6. Verifica entrambi gli account con il pulsante **"Invia email di prova"** prima di andare in produzione.
+
+### Checklist deliverability email (SPF / DKIM / DMARC)
+
+Ogni dominio usato come mittente (sia quello della PEC sia quello dell'email "classica") deve avere questi record DNS, altrimenti i messaggi finiscono facilmente in spam o vengono rifiutati:
+
+- **SPF** (TXT sul dominio): elenca i server autorizzati a inviare per conto del dominio, es. `v=spf1 include:_spf.nomeprovider.it ~all` — il valore esatto lo fornisce il provider SMTP/PEC. Verifica con `dig TXT nomedominio.it` o un tool come [mxtoolbox.com/spf.aspx](https://mxtoolbox.com/spf.aspx).
+- **DKIM** (TXT su `<selettore>._domainkey.nomedominio.it`): firma crittografica dei messaggi; selettore e chiave pubblica li genera il provider SMTP/PEC (quasi tutti firmano automaticamente lato server — è il caso comune). Verifica con `dig TXT <selettore>._domainkey.nomedominio.it` o [mxtoolbox.com/dkim.aspx](https://mxtoolbox.com/dkim.aspx). Se il provider **non** firma lato server, la specifica richiede una firma DKIM applicativa: Symfony Mailer la supporta nativamente tramite `Symfony\Component\Mailer\Bridge\...` con un signer DKIM — non ancora implementata in questo progetto perché entrambi gli account configurati finora firmano lato server; va aggiunta se si sceglie un provider che non lo fa.
+- **DMARC** (TXT su `_dmarc.nomedominio.it`): politica su cosa fare dei messaggi che falliscono SPF/DKIM, es. `v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@nomedominio.it` per iniziare in modalità osservativa prima di passare a `p=reject`. Verifica con `dig TXT _dmarc.nomedominio.it` o [mxtoolbox.com/dmarc.aspx](https://mxtoolbox.com/dmarc.aspx).
+
+Oltre ai record DNS, l'applicazione rispetta già gli altri punti della specifica: ogni email è multipart (HTML + testo semplice), con oggetto chiaro e nessun allegato; il mittente di ciascun account email deve appartenere allo stesso dominio verificato (niente "From" falsificati) — è responsabilità di chi configura l'account dal pannello usare un indirizzo coerente col dominio con SPF/DKIM/DMARC impostati.

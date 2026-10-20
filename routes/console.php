@@ -23,3 +23,8 @@ Schedule::command('admins:send-daily-digest')
     ->dailyAt('08:05')
     ->timezone('Europe/Rome')
     ->withoutOverlapping();
+
+Schedule::command('certificates:retention-notify')
+    ->monthlyOn(1, '08:10')
+    ->timezone('Europe/Rome')
+    ->withoutOverlapping();

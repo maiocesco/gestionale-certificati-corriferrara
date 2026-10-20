@@ -95,12 +95,17 @@
                                         @if ($certificate->status === \App\Enums\CertificateStatus::Approved && $coverageService->isSuperseded($certificate))
                                             <span class="text-gray-500 dark:text-gray-400">({{ __('superato') }})</span>
                                         @endif
+                                        @if ($certificate->isRetentionDeleted())
+                                            <span class="text-gray-500 dark:text-gray-400">({{ __('eliminato per conservazione') }})</span>
+                                        @endif
                                     </span>
-                                    <a href="{{ route('certificates.file', $certificate) }}" target="_blank" class="text-indigo-600 dark:text-indigo-400 underline">
-                                        {{ __('Visualizza') }}
-                                    </a>
+                                    @if ($certificate->file_path)
+                                        <a href="{{ route('certificates.file', $certificate) }}" target="_blank" class="text-indigo-600 dark:text-indigo-400 underline">
+                                            {{ __('Visualizza') }}
+                                        </a>
+                                    @endif
                                 </div>
-                                @if ($certificate->status === \App\Enums\CertificateStatus::Rejected)
+                                @if ($certificate->status === \App\Enums\CertificateStatus::Rejected && $certificate->rejection_reason)
                                     <p class="mt-1 text-red-700 dark:text-red-400">{{ $certificate->rejection_reason }}</p>
                                 @endif
                             </li>

@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             EmailAccountSeeder::class,
             EmailTemplateSeeder::class,
+            RetentionSettingSeeder::class,
         ]);
     }
 }
