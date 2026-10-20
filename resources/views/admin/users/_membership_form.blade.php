@@ -33,7 +33,7 @@
             <x-input-label for="discipline-{{ $formId }}" :value="__('Disciplina')" />
             <select id="discipline-{{ $formId }}" name="discipline" required
                     class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full">
-                @foreach (\App\Enums\Discipline::cases() as $discipline)
+                @foreach (\App\Enums\Discipline::membershipCases() as $discipline)
                     <option value="{{ $discipline->value }}" @selected(old('discipline', $membership?->discipline?->value) === $discipline->value)>
                         {{ $discipline->label() }}
                     </option>

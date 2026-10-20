@@ -19,7 +19,7 @@ trait ValidatesMembershipRules
             'entity' => ['required', Rule::enum(MembershipEntity::class)],
             'discipline' => [
                 'required',
-                Rule::enum(Discipline::class),
+                Rule::enum(Discipline::class)->except(Discipline::AltriSport),
                 $this->clubDisciplineRule(),
                 $this->fidalDisciplineRule(),
                 $this->fidalRequiresCertificateRule($user),

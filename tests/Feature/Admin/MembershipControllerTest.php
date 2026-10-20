@@ -92,6 +92,20 @@ it('rifiuta un tesseramento Corriferrara Bike per una disciplina diversa dal cic
     $response->assertSessionHasErrors('discipline');
 });
 
+it('rifiuta "Altri sport" come disciplina di un tesseramento, non essendo tesserabile', function () {
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.users.memberships.store', $this->athlete),
+        validMembershipPayload([
+            'club_type' => ClubType::External->value,
+            'external_club_name' => 'Polisportiva Esempio',
+            'discipline' => Discipline::AltriSport->value,
+        ])
+    );
+
+    $response->assertSessionHasErrors('discipline');
+    expect($this->athlete->memberships()->count())->toBe(0);
+});
+
 it('rifiuta FIDAL per una disciplina diversa dall\'atletica leggera', function () {
     $response = $this->actingAs($this->admin)->post(
         route('admin.users.memberships.store', $this->athlete),

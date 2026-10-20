@@ -71,7 +71,7 @@ trait FiltersAthletes
     {
         return [
             'entities' => \App\Enums\MembershipEntity::cases(),
-            'disciplines' => \App\Enums\Discipline::cases(),
+            'disciplines' => \App\Enums\Discipline::membershipCases(),
             'clubTypes' => \App\Enums\ClubType::cases(),
             'externalClubs' => \App\Models\ExternalClub::orderBy('name')->get(),
             'trainingLocations' => \App\Models\TrainingLocation::orderBy('name')->get(),

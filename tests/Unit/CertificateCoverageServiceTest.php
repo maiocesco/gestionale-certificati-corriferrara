@@ -74,6 +74,17 @@ it('un agonistico di qualunque disciplina copre anche il requisito generico', fu
     expect($this->service->isCompliant($user))->toBeTrue();
 });
 
+it('un agonistico per altri sport copre il requisito generico ma non uno specifico', function () {
+    $user = User::factory()->create();
+    Membership::factory()->for($user)->create(['is_competitive' => true, 'discipline' => Discipline::AtleticaLeggera, 'entity' => \App\Enums\MembershipEntity::Fidal]);
+    Certificate::factory()->for($user)->competitive(Discipline::AltriSport)->approved()->create();
+
+    // Copre il requisito generico (any) ma non quello specifico per l'atletica leggera.
+    expect($this->service->isCompliant($user))->toBeFalse();
+    expect($this->service->gapsFor($user))->toHaveCount(1);
+    expect($this->service->gapsFor($user)->first()->requirement->isAny())->toBeFalse();
+});
+
 it('non è in regola un atleta agonista senza il certificato per la sua disciplina', function () {
     $user = User::factory()->create();
     Membership::factory()->for($user)->create(['is_competitive' => true, 'discipline' => Discipline::AtleticaLeggera, 'entity' => \App\Enums\MembershipEntity::Fidal]);
