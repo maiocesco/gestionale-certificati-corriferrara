@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Utenti') }}
+                {{ __('Atleti') }}
             </h2>
             <a href="{{ route('admin.users.create') }}">
-                <x-primary-button>{{ __('Nuovo utente') }}</x-primary-button>
+                <x-primary-button>{{ __('Nuovo atleta') }}</x-primary-button>
             </a>
         </div>
     </x-slot>
