@@ -30,6 +30,15 @@
                         <x-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
                             {{ __('Da approvare') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.email-accounts.index')" :active="request()->routeIs('admin.email-accounts.*')">
+                            {{ __('Account email') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.email-templates.index')" :active="request()->routeIs('admin.email-templates.*')">
+                            {{ __('Testi email') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
+                            {{ __('Log invii') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -100,6 +109,15 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.certificates.index')" :active="request()->routeIs('admin.certificates.*')">
                     {{ __('Da approvare') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.email-accounts.index')" :active="request()->routeIs('admin.email-accounts.*')">
+                    {{ __('Account email') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.email-templates.index')" :active="request()->routeIs('admin.email-templates.*')">
+                    {{ __('Testi email') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
+                    {{ __('Log invii') }}
                 </x-responsive-nav-link>
             @endif
         </div>

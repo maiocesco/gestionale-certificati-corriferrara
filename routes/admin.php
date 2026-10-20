@@ -3,8 +3,11 @@
 use App\Http\Controllers\Admin\CadastralCodeController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmailAccountController;
+use App\Http\Controllers\Admin\EmailTemplateController;
 use App\Http\Controllers\Admin\ExternalClubController;
 use App\Http\Controllers\Admin\MembershipController;
+use App\Http\Controllers\Admin\NotificationLogController;
 use App\Http\Controllers\Admin\TrainingLocationController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -40,4 +43,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('dashboard/non-compliant', [DashboardController::class, 'nonCompliant'])->name('dashboard.non-compliant');
     Route::get('dashboard/expiring', [DashboardController::class, 'expiring'])->name('dashboard.expiring');
+
+    Route::get('email-accounts', [EmailAccountController::class, 'index'])->name('email-accounts.index');
+    Route::put('email-accounts/{purpose}', [EmailAccountController::class, 'update'])->name('email-accounts.update');
+    Route::post('email-accounts/{purpose}/test', [EmailAccountController::class, 'sendTest'])->name('email-accounts.test');
+
+    Route::get('email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
+    Route::get('email-templates/{emailTemplate}/edit', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
+    // POST (non PUT): la pagina di modifica ha un secondo pulsante "Anteprima"
+    // che punta a un'altra rotta tramite formaction/formmethod; un override
+    // _method condiviso dal form avrebbe spoofato anche quella richiesta.
+    Route::post('email-templates/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
+    Route::post('email-templates/{emailTemplate}/preview', [EmailTemplateController::class, 'preview'])->name('email-templates.preview');
+    Route::post('email-templates/{emailTemplate}/test', [EmailTemplateController::class, 'sendTest'])->name('email-templates.test');
+    Route::put('email-templates/{emailTemplate}/reset', [EmailTemplateController::class, 'reset'])->name('email-templates.reset');
+
+    Route::get('notification-log', [NotificationLogController::class, 'index'])->name('notification-log.index');
 });

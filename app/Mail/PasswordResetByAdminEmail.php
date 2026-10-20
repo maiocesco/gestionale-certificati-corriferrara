@@ -2,39 +2,31 @@
 
 namespace App\Mail;
 
+use App\Enums\EmailTemplateKey;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class PasswordResetByAdminEmail extends Mailable implements ShouldQueue
+class PasswordResetByAdminEmail extends TemplatedMailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
     public function __construct(
         public User $user,
         public string $temporaryPassword,
     ) {}
 
-    public function envelope(): Envelope
+    protected function templateKey(): EmailTemplateKey
     {
-        return new Envelope(
-            subject: __('La tua password è stata reimpostata'),
-        );
+        return EmailTemplateKey::PasswordResetByAdmin;
     }
 
-    public function content(): Content
+    protected function placeholders(): array
     {
-        return new Content(
-            markdown: 'emails.users.password-reset-by-admin',
-            with: [
-                'firstName' => $this->user->first_name,
-                'temporaryPassword' => $this->temporaryPassword,
-                'loginUrl' => route('login'),
-            ],
-        );
+        return [
+            'nome' => $this->user->first_name,
+            'password_provvisoria' => $this->temporaryPassword,
+            'link_accesso' => route('login'),
+        ];
     }
 }

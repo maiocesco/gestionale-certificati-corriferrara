@@ -2,39 +2,31 @@
 
 namespace App\Mail;
 
+use App\Enums\EmailTemplateKey;
 use App\Models\Certificate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class CertificateApprovedEmail extends Mailable implements ShouldQueue
+class CertificateApprovedEmail extends TemplatedMailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
     public function __construct(
         public Certificate $certificate,
     ) {}
 
-    public function envelope(): Envelope
+    protected function templateKey(): EmailTemplateKey
     {
-        return new Envelope(
-            subject: __('Certificato medico approvato'),
-        );
+        return EmailTemplateKey::CertificateApproved;
     }
 
-    public function content(): Content
+    protected function placeholders(): array
     {
-        return new Content(
-            markdown: 'emails.certificates.approved',
-            with: [
-                'firstName' => $this->certificate->user->first_name,
-                'typeDescription' => $this->certificate->typeDescription(),
-                'expiresAt' => $this->certificate->expires_at->format('d/m/Y'),
-                'profileUrl' => route('certificates.index'),
-            ],
-        );
+        return [
+            'nome' => $this->certificate->user->first_name,
+            'tipo_certificato' => $this->certificate->typeDescription(),
+            'data_scadenza' => $this->certificate->expires_at->format('d/m/Y'),
+            'link_profilo' => route('certificates.index'),
+        ];
     }
 }

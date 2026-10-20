@@ -13,3 +13,13 @@ Artisan::command('inspire', function () {
 Schedule::command('queue:work --stop-when-empty')
     ->everyMinute()
     ->withoutOverlapping();
+
+Schedule::command('certificates:send-reminders')
+    ->dailyAt('08:00')
+    ->timezone('Europe/Rome')
+    ->withoutOverlapping();
+
+Schedule::command('admins:send-daily-digest')
+    ->dailyAt('08:05')
+    ->timezone('Europe/Rome')
+    ->withoutOverlapping();

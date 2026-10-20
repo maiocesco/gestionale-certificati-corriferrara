@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CadastralCodeSeeder::class,
             AdminUserSeeder::class,
+            EmailAccountSeeder::class,
+            EmailTemplateSeeder::class,
         ]);
     }
 }

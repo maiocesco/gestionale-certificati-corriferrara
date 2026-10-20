@@ -28,3 +28,26 @@ it('permette di cambiare la propria password dal profilo', function () {
     $response->assertSessionHasNoErrors();
     expect(Hash::check('NuovaPassword1!', $user->refresh()->password))->toBeTrue();
 });
+
+it('permette a un amministratore di attivare il riepilogo giornaliero', function () {
+    $admin = User::factory()->admin()->create(['daily_digest_enabled' => false]);
+
+    $response = $this->actingAs($admin)->put('/profile/digest-preference', ['daily_digest_enabled' => '1']);
+
+    $response->assertRedirect(route('profile.edit'));
+    expect($admin->refresh()->daily_digest_enabled)->toBeTrue();
+});
+
+it('permette a un amministratore di disattivare il riepilogo giornaliero', function () {
+    $admin = User::factory()->admin()->create(['daily_digest_enabled' => true]);
+
+    $this->actingAs($admin)->put('/profile/digest-preference', []);
+
+    expect($admin->refresh()->daily_digest_enabled)->toBeFalse();
+});
+
+it('impedisce a un atleta di modificare la preferenza del riepilogo giornaliero', function () {
+    $athlete = User::factory()->create();
+
+    $this->actingAs($athlete)->put('/profile/digest-preference', ['daily_digest_enabled' => '1'])->assertForbidden();
+});

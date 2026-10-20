@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\MembershipEntity;
 use App\Enums\UserRole;
+use App\Mail\PasswordResetEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
@@ -34,6 +36,7 @@ class User extends Authenticatable
         'birth_cadastral_code_id',
         'fiscal_code',
         'training_location_id',
+        'daily_digest_enabled',
     ];
 
     /**
@@ -59,6 +62,7 @@ class User extends Authenticatable
             'role' => UserRole::class,
             'is_active' => 'boolean',
             'must_change_password' => 'boolean',
+            'daily_digest_enabled' => 'boolean',
             'birth_date' => 'date',
         ];
     }
@@ -101,5 +105,14 @@ class User extends Authenticatable
     public function hasFidalMembership(): bool
     {
         return $this->memberships->contains(fn (Membership $membership) => $membership->entity === MembershipEntity::Fidal);
+    }
+
+    /**
+     * Sovrascrive l'invio di Laravel per usare il testo configurabile
+     * dell'email "classica" invece della notifica di default.
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        Mail::to($this->email)->send(new PasswordResetEmail($this, $token));
     }
 }

@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/digest-preference', [ProfileController::class, 'updateDigestPreference'])->name('profile.digest-preference.update');
 
     Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
     Route::get('/certificates/create', [CertificateController::class, 'create'])->name('certificates.create');

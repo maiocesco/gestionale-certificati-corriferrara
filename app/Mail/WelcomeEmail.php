@@ -2,40 +2,32 @@
 
 namespace App\Mail;
 
+use App\Enums\EmailTemplateKey;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class WelcomeEmail extends Mailable implements ShouldQueue
+class WelcomeEmail extends TemplatedMailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable;
 
     public function __construct(
         public User $user,
         public string $temporaryPassword,
     ) {}
 
-    public function envelope(): Envelope
+    protected function templateKey(): EmailTemplateKey
     {
-        return new Envelope(
-            subject: __('Benvenuto nel gestionale certificati di Corriferrara'),
-        );
+        return EmailTemplateKey::Welcome;
     }
 
-    public function content(): Content
+    protected function placeholders(): array
     {
-        return new Content(
-            markdown: 'emails.users.welcome',
-            with: [
-                'firstName' => $this->user->first_name,
-                'email' => $this->user->email,
-                'temporaryPassword' => $this->temporaryPassword,
-                'loginUrl' => route('login'),
-            ],
-        );
+        return [
+            'nome' => $this->user->first_name,
+            'email' => $this->user->email,
+            'password_provvisoria' => $this->temporaryPassword,
+            'link_accesso' => route('login'),
+        ];
     }
 }
