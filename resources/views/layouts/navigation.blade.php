@@ -43,7 +43,7 @@
                         </div>
 
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            {{ __('Amministrazione') }}
+                            {{ __('Atleti') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
                             {{ __('Sedi') }}
@@ -55,7 +55,7 @@
                             {{ __('Testi email') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
-                            {{ __('Log invii') }}
+                            {{ __('Email') }}
                         </x-nav-link>
                     @else
                         <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
@@ -142,7 +142,7 @@
                 </div>
 
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    {{ __('Amministrazione') }}
+                    {{ __('Atleti') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.training-locations.index')" :active="request()->routeIs('admin.training-locations.*')">
                     {{ __('Sedi') }}
@@ -154,7 +154,7 @@
                     {{ __('Testi email') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.notification-log.index')" :active="request()->routeIs('admin.notification-log.*')">
-                    {{ __('Log invii') }}
+                    {{ __('Email') }}
                 </x-responsive-nav-link>
             @endif
         </div>
