@@ -6,6 +6,7 @@
 .env.testing
 /CLAUDE.md
 /docs
+/loghi
 /.claude
 /SESSION_HANDOFF.md
 .phpactor.json
